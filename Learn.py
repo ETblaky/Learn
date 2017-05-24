@@ -21,7 +21,7 @@ def lambda_handler(event, context):
     @ask.on_intent("classes")
     def classes(slots):
 
-        data = Classes.get_response(slots["class"]["value"].title())
+        data = Classes.get_response(slots)
 
         return {
             "card_name": "Subjects",
@@ -33,7 +33,7 @@ def lambda_handler(event, context):
     @ask.on_intent("verifyHave")
     def verify_have(slots):
 
-        data = Classes.reorder(Classes.get_classes(slots["class"]["value"].title()))
+        data = Classes.reorder(Classes.get_classes(Classes.get_day(slots)))
 
         return {
             "card_name": "Subjects",

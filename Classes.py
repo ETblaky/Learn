@@ -1,7 +1,28 @@
 import boto3
+from datetime import datetime
+from datetime import timedelta
+import pytz
 
 client = boto3.client('sdb', region_name='us-west-2', aws_access_key_id='{}',
                       aws_secret_access_key='{}')
+
+
+def get_day(slots):
+    if 'value' in slots["day_week"]:
+        weekDay = slots["day_week"]["value"].title()
+    elif 'value' in slots["day"]:
+        weekDay = get_today() if slots["day"]["value"] == "today" else get_tomorrow()
+    else:
+        weekDay = get_tomorrow()
+    return weekDay
+
+
+def get_today():
+    return datetime.now(pytz.timezone(zone="America/Sao_Paulo")).strftime('%A')
+
+
+def get_tomorrow():
+    return (datetime.now(pytz.timezone(zone="America/Sao_Paulo")) + timedelta(days=1)).strftime('%A')
 
 
 def get_classes(day):
@@ -31,13 +52,9 @@ def reorder(raw_classes):
 
 
 def stringfy(reordered):
-    final_response = reordered[0] + "," + reordered[0] + "," + reordered[0] + "," + reordered[0] + "and" + reordered[0]
+    final_response = reordered[0] + ", " + reordered[1] + ", " + reordered[2] + ", " + reordered[3] + " and " + reordered[4]
     return final_response
 
 
-def get_response(day):
-    return stringfy(reorder(get_classes(day)))
-
-
-
-print(reorder(get_classes("Monday")))
+def get_response(slots):
+    return stringfy(reorder(get_classes(get_day(slots))))
